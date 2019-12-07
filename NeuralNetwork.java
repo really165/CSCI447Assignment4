@@ -179,6 +179,17 @@ public final class NeuralNetwork {
         return c;
     }
 
+
+    public double[] classifyOutput(Example e) {
+        for (int i = 0; i < layer[0].node.length; i++) {
+            layer[0].input[i] = e.input[i];
+        }
+        // Feed the input through the network
+        feedForward();
+        // Return the output of the last layer
+        return layer[layers-1].getOutput();
+    }  
+
     
     public double regress(Example e) {
         int i;
