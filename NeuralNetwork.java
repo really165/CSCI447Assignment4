@@ -200,6 +200,14 @@ public final class NeuralNetwork {
         return this.numOutputs;
     }
 
+    public int getNumWeights() {
+        int numWeights = 0;
+        for (int i = 0; i < layers-1; i++) {
+            numWeights += (layer[i].node.length + 1) * layer[i+1].node.length;
+        }
+        return numWeights;
+    }
+
     /**
      * Set's the activation function of every non-input layer in the network
      * @param activation The activation function to use
