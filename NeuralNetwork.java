@@ -5,7 +5,7 @@ import java.util.ArrayList;
 /**
  * Class to represent a multi-layer neural network
  */
-public final class MLPNeuralNetwork {
+public final class NeuralNetwork {
 
     private final int numOutputs;
     private final int layers;
@@ -19,9 +19,9 @@ public final class MLPNeuralNetwork {
      * Creates a multi-layer neural network
      * @param numInputs The number of input features
      * @param numOutputs The number of classes to predict or 1 for regression
-     * @param hiddenNodes The number of hidden nodes in each hidden layer
+     * @param hiddenNodes An int array with the number of hidden nodes in each hidden layer
      */
-    public MLPNeuralNetwork(int numInputs, int numOutputs, int[] hiddenNodes) {
+    public NeuralNetwork(int numInputs, int numOutputs, int[] hiddenNodes) {
         // Store the number of outputs and layers
         this.numOutputs = numOutputs;
         this.layers = hiddenNodes.length+2;
@@ -155,6 +155,7 @@ public final class MLPNeuralNetwork {
         }
     }
 
+
     public int classify(Example e) {
         int i;
         double[] output;
@@ -242,5 +243,26 @@ public final class MLPNeuralNetwork {
     public void setParameters(double eta, double momentum) {
         this.eta = eta;
         this.momentum = momentum;
+    }
+
+    /**
+     * Sets the weights of each node in the network given a vector of all the weights
+     * @param weights A vector of weights representing all the weights in the network
+     */
+    public void setWeights(double[] weights) {
+        Layer curLayer;
+        Node curNode;
+        int i,j,k;
+        int w = 0;
+        for (i = 1; i < layers; i++) {
+            curLayer = layer[i];
+            for (j = 0; j < curLayer.node.length; j++) {
+                curNode = curLayer.node[j];
+                for (k = 0; k < curNode.weight.length; k++) {
+                    curNode.weight[k] = weights[w++];
+                }
+                curNode.bias = weights[w++];
+            }
+        }
     }
 }
