@@ -62,7 +62,7 @@ public class CrossValidation {
     }
 
     // Generates 10 folds from a set of examples
-    private static ArrayList<Example>[][] getFolds(ArrayList<Example> examples) {
+    public static ArrayList<Example>[][] getFolds(ArrayList<Example> examples) {
         Collections.shuffle(examples);
         int partitionSize = (int)((double)examples.size() / 10);
         ArrayList<Example>[][] folds = new ArrayList[10][2];
