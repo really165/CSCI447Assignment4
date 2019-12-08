@@ -6,9 +6,9 @@ public class BackPropagation implements TrainingAlgorithm {
 
 	double eta;
 	double momentum;
-	MLPNeuralNetwork neuralNetwork;
+	NeuralNetwork neuralNetwork;
 	
-	public BackPropagation(double param1, double param2, MLPNeuralNetwork param3) {
+	public BackPropagation(double param1, double param2, NeuralNetwork param3) {
 		
 	}
 	
