@@ -1,3 +1,5 @@
+package csci447.project4;
+
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -12,13 +14,15 @@ class Particle {
     public static double c1;
     public static double c2;
 
-    public double velocity;
+    public double[] velocity;
     public double[] position;
     public double[] pbest;
+    public double bestf;
 
 
     public Particle(int size) {
         this.position = new double[size];
+        this.velocity = new double[size];
         for (int i = 0; i < size; i++) {
             position[i] = pbest[i] = 0.01 - random.nextDouble() * 0.02;
         }
