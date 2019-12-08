@@ -28,7 +28,7 @@ public class GA implements TrainingAlgorithm {
 		int numInputs = examples.get(0).input.length;
 		System.out.println("numInputs = " + numInputs);
 		//get the number of outputs(number of classes)
-		int numOutputs = examples.get(0).target.numRows();
+		int numOutputs = examples.get(0).target.length;
 		System.out.println("numOutputs = " + numOutputs);
 		//declare the number of hidden nodes in each layer
 		int[] hiddenNodes = new int[]{8,6};
