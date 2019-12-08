@@ -8,11 +8,12 @@ public class GA implements TrainingAlgorithm {
 
 	int populationSize;
 	ArrayList<Double> fitnessScores = new ArrayList<Double>();
-	int weightArrayLength = 50;//TODO: determine length of weight arrays
+	int weightArrayLength;
 	ArrayList<double[]> members = new ArrayList<double[]>();
 	double maxMutation;
 	double mutationProbability;
 	double fitnessAverage;
+	NeuralNetwork NN;
 	
 	public GA(int populationSize, double mutationProbability, double maxMutation) {
 		this.populationSize = populationSize;
@@ -22,7 +23,21 @@ public class GA implements TrainingAlgorithm {
 	
 	@Override
 	public double[] train(ArrayList<Example> examples) {
-		System.out.println("what the fuck");
+		//determine the length of the weight array
+		//get the number of inputs(number of input features)
+		int numInputs = examples.get(0).input.length;
+		System.out.println("numInputs = " + numInputs);
+		//get the number of outputs(number of classes)
+		int numOutputs = examples.get(0).target.numRows();
+		System.out.println("numOutputs = " + numOutputs);
+		//declare the number of hidden nodes in each layer
+		int[] hiddenNodes = new int[]{8,6};
+		//declare the neural network
+		NN = new NeuralNetwork(numInputs, numOutputs, hiddenNodes);
+		NN.setActivationFunction(new SigmoidalActivationFunction());
+        NN.setParameters(0.1, 0.1);
+		weightArrayLength = NN.getNumWeights();
+		
 		//construct initial population(generate random weights)
 		//declare variable for fitness total(used for average fitness)
 		double fitnessTotal = 0;
@@ -44,8 +59,7 @@ public class GA implements TrainingAlgorithm {
 			//compute fitness for each member of the population
 			//declare NN and assign weight array to it
 			//compute loss of the NN using the training set
-			Random fitnessRand = new Random();//TODO: determine fitness of initial population
-			double fitness = fitnessRand.nextDouble();
+			double fitness = getFitness(examples, newWeightArray);
 			//add new member to the population members variable
 			members.add(newWeightArray);
 			//add fitness value to the fitness score variable
@@ -59,7 +73,7 @@ public class GA implements TrainingAlgorithm {
 		//declare variable for iteration count
 		int iterations = 0;
 		//while population has not converged(average fitness has not changed enough) or a set number of iterations
-		while(iterations < 100) {
+		while(iterations < 1000) {
 			//selection(find the two members with the highest fitness scores)
 			//declare parent1, parent2 variables(index of max weight array)
 			int parent1 = 0, parent2 = 0;
@@ -188,16 +202,21 @@ public class GA implements TrainingAlgorithm {
 			//remove the weight arrays and scores at index1 and index2
 			members.remove(index1);
 			fitnessScores.remove(index1);
-			members.remove(index2);
-			fitnessScores.remove(index2);
+			if(index1>index2) {
+				members.remove(index2);
+				fitnessScores.remove(index2);
+			}
+			else {
+				members.remove(index2-1);
+				fitnessScores.remove(index2-1);
+			}
 
 			//add the new offspring and their fitness scores to the population
 			//determine the fitness of the offspring
 			//first offspring
 			//declare NN and assign first offspring's weight array to it
 			//compute loss of the NN using the training set
-			Random fitnessRand1 = new Random();//TODO: determine fitness of first child
-			double fitness1 = fitnessRand1.nextDouble();
+			double fitness1 = getFitness(examples, child1);
 			//add the first offspring to the population members variable
 			members.add(child1);
 			//add fitness value of the first offspring to the fitness score variable
@@ -205,8 +224,7 @@ public class GA implements TrainingAlgorithm {
 			//second offspring
 			//declare NN and assign second offspring's weight array to it
 			//compute loss of the NN using the training set
-			Random fitnessRand2 = new Random();//TODO: determine fitness of second child
-			double fitness2 = fitnessRand2.nextDouble();
+			double fitness2 = getFitness(examples, child2);
 			//add the second offspring to the population members variable
 			members.add(child2);
 			//add fitness value of the second offspring to the fitness score variable
@@ -222,20 +240,15 @@ public class GA implements TrainingAlgorithm {
 			}
 			//new fitness average is new fitness total/length of fitness scores variable
 			double newFitnessAverage = newFitnessTotal/fitnessScores.size();
-			System.out.println("New fitness average is: " + newFitnessAverage);
 
 			//determine if fitness has changed enough
 			//if new fitness average > old fitness average
-			if(newFitnessAverage > fitnessAverage) {
-				//update fitness average
-				//old fitness average = new fitness average
-				fitnessAverage = newFitnessAverage;
-				//increment iteration count
-				iterations++;
-			}
-			else {
-				break;
-			}
+			//update fitness average
+			//old fitness average = new fitness average
+			fitnessAverage = newFitnessAverage;
+			System.out.println("fitness average = " + fitnessAverage);
+			//increment iteration count
+			iterations++;
 		}
 		//find the most fit member of the population
 		//declare a variable of maxFitnessScore
@@ -255,7 +268,30 @@ public class GA implements TrainingAlgorithm {
 			}
 		}
 		//return the array of the most fit member of the population
-		System.out.println("Most fit array: " + Arrays.toString(members.get(maxFitnessIndex)) + "\nwith a score of " + fitnessScores.get(maxFitnessIndex));
+		System.out.println("final weight array = " + Arrays.toString(members.get(maxFitnessIndex)));
+		System.out.println("final fitness score = " + fitnessScores.get(maxFitnessIndex));
 		return members.get(maxFitnessIndex);
 	}
+	
+	public double getFitness(ArrayList<Example> examples, double[] weights) {
+		NN.setWeights(weights);
+		int actual;
+        int predicted;
+        int loss = 0;
+        for (Example e : examples) {
+            NN.classify(e);
+            actual = (int) e.c;
+            predicted = NN.classify(e);
+            if (actual != predicted) {
+                loss++;
+            }
+        }
+        double lossTotal = (double)loss;
+        double examplesSize = (double)examples.size();
+        if(lossTotal/examplesSize == 0.0) {
+        	return examplesSize;
+        }
+        return 1/(lossTotal/examplesSize);
+    }
+	
 }
