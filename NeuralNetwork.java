@@ -79,7 +79,7 @@ public final class NeuralNetwork {
                 // Feed the input through the network
                 feedForward();
                 // Update the weights and biases by backpropagating the error
-                updateWeights(e.targeta);
+                updateWeights(e.target);
             }
             iter++;
         }

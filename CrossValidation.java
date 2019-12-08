@@ -1,7 +1,9 @@
-package csci447.project3;
+package csci447.project4;
 
 import java.util.ArrayList;
 import java.util.Collections;
+
+import csci447.project4.Example;
 
 /**
  * Generalizes the 10-fold cross validation procedure for both types of networks
