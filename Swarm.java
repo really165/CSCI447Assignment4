@@ -1,3 +1,4 @@
+import csci447.project3.CrossValidation;
 import csci447.project4.NeuralNetwork;
 
 public class Swarm {
@@ -7,11 +8,12 @@ public class Swarm {
     public Random random;
     public Particle[] particle;
     public double[] gbest;
+    public double bestFitness;
     public double c1;
     public double c2;
 
 
-    public Swarm(NeuralNetwork network, ArrayList<Example> examples, int numParticles, double c1, double c2) {
+    public Swarm(NeuralNetwork network, int numParticles, double c1, double c2) {
         this.network = network;
         this.c1 = c1;
         this.c2 = c2;
@@ -27,11 +29,29 @@ public class Swarm {
         }
     }
 
-    public void update() {
+    public void update(ArrayList<Example> examples) {
         Particle p;
-        for (int i = 0; i < particle.length; i++) {
+        double fitness;
+        int i;
+        for (i = 0; i < particle.length; i++) {
             p = particle[i];
+            fitness = p.getFitness(network, examples);
+            if (fitness > p.bestFitness) {
+                p.pbest = p.postion;
+                p.bestFitness = fitness;
+            }
+            if (fitness > bestFitness) {
+                gbest = p.position;
+                bestFitness = fitness;
+            }
         }
+
+        for (i = 0; i < particle.length; i++) {
+            p = particle[i];
+            // Update velocity here
+            // Update position here
+        }
+
     }
 
 }
