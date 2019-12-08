@@ -8,11 +8,12 @@ public class GA implements TrainingAlgorithm {
 
 	int populationSize;
 	ArrayList<Double> fitnessScores = new ArrayList<Double>();
-	int weightArrayLength = 50;//TODO: determine length of weight arrays
+	int weightArrayLength;
 	ArrayList<double[]> members = new ArrayList<double[]>();
 	double maxMutation;
 	double mutationProbability;
 	double fitnessAverage;
+	NeuralNetwork NN;
 	
 	public GA(int populationSize, double mutationProbability, double maxMutation) {
 		this.populationSize = populationSize;
@@ -22,7 +23,19 @@ public class GA implements TrainingAlgorithm {
 	
 	@Override
 	public double[] train(ArrayList<Example> examples) {
-		System.out.println("what the fuck");
+		//determine the length of the weight array
+		//get the number of inputs(number of input features)
+		int numInputs = examples.get(0).input.length;
+		System.out.println("numInputs = " + numInputs);
+		//get the number of outputs(number of classes)
+		int numOutputs = examples.get(0).target.numRows();
+		System.out.println("numOutputs = " + numOutputs);
+		//declare the number of hidden nodes in each layer
+		int[] hiddenNodes = new int[]{8,6};
+		//declare the neural network
+		NN = new NeuralNetwork(numInputs, numOutputs, hiddenNodes);
+		weightArrayLength = NN.getNumWeights();
+		
 		//construct initial population(generate random weights)
 		//declare variable for fitness total(used for average fitness)
 		double fitnessTotal = 0;
@@ -46,6 +59,7 @@ public class GA implements TrainingAlgorithm {
 			//compute loss of the NN using the training set
 			Random fitnessRand = new Random();//TODO: determine fitness of initial population
 			double fitness = fitnessRand.nextDouble();
+			getFitness(examples, newWeightArray);
 			//add new member to the population members variable
 			members.add(newWeightArray);
 			//add fitness value to the fitness score variable
@@ -222,7 +236,6 @@ public class GA implements TrainingAlgorithm {
 			}
 			//new fitness average is new fitness total/length of fitness scores variable
 			double newFitnessAverage = newFitnessTotal/fitnessScores.size();
-			System.out.println("New fitness average is: " + newFitnessAverage);
 
 			//determine if fitness has changed enough
 			//if new fitness average > old fitness average
@@ -255,7 +268,14 @@ public class GA implements TrainingAlgorithm {
 			}
 		}
 		//return the array of the most fit member of the population
-		System.out.println("Most fit array: " + Arrays.toString(members.get(maxFitnessIndex)) + "\nwith a score of " + fitnessScores.get(maxFitnessIndex));
 		return members.get(maxFitnessIndex);
 	}
+	
+	public double getFitness(ArrayList<Example> examples, double[] weights) {
+		System.out.println(Arrays.toString(weights));
+		NN.setWeights(weights);
+        NN.classify(examples.get(0));
+        return 0.0;
+    }
+	
 }
