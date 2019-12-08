@@ -23,6 +23,7 @@ public class DEP implements TrainingAlgorithm {
 	
 	@Override
 	public double[] train(ArrayList<Example> examples) {
+		weightArrayLength = network.getNumWeights();
  		int t=0; //generation counter
  		double trialVector;
  		
@@ -49,7 +50,7 @@ public class DEP implements TrainingAlgorithm {
  		}
  		
  		// Offpring
- 		double[] Xo=new double[1];
+ 		double[] Xo=new double[weightArrayLength];
  		Random rand=new Random();
  		//Random examples
  		double[] x1;
@@ -78,12 +79,16 @@ public class DEP implements TrainingAlgorithm {
 				// Offpring-Crossover
 				double fitnessOffpring;
 				double randDouble=rand.nextDouble();
-				if(randDouble<=pr) {
-					Xo=population.get(j); 
-				}
-				else {
-					Xo[0]=trialVector;
-				}
+				
+				for(int i = 0; i < weightArrayLength; i++) {
+					if(randDouble<=pr) {
+						Xo[i]=population.get(j)[i]; 
+					}
+					else {
+						Xo[i]=trialVector;
+					}
+	 			}
+				
 				//Set fitness of the new offpring
 				fitnessOffpring = getFitness(examples, Xo);
 				
@@ -110,7 +115,8 @@ public class DEP implements TrainingAlgorithm {
 				}
 			}
 		}
-		return population.get(population.size());
+		System.out.println("Final Fitness: " + fitnessScores.get(fitnessScores.size()-1));
+		return population.get(population.size()-1);
 	}
 	public int repeatedCheck(ArrayList<Integer> num) {
 		Random rand=new Random();
@@ -136,8 +142,14 @@ public class DEP implements TrainingAlgorithm {
                 loss++;
             }
         }
-        return 1/(loss/examples.size());
+        double lossTotal = (double)loss;
+        double examplesSize = (double)examples.size();
+        if(lossTotal/examplesSize == 0.0) {
+        	return examplesSize;
+        }
+        return 1/(lossTotal/examplesSize);
     }
+	
 
 }
 
