@@ -6,6 +6,7 @@ import java.util.Random;
 import csci447.project4.Example;
 import csci447.project4.NeuralNetwork;
 
+// represents a group of particles for pso algorithm
 public class Swarm {
 
     public NeuralNetwork network;
@@ -28,6 +29,7 @@ public class Swarm {
         this.random = new Random();
     }
 
+    // initialize positions of particles randomly
     public void initialize() {
         int particleSize = network.getNumWeights();
         this.gbest = new double[particleSize];
@@ -36,6 +38,7 @@ public class Swarm {
         }
     }
 
+    // update pbest, gbest, velocity and positions
     public void update(ArrayList<Example> examples) {
 
         // Calculate fitness of each particle and update pbest and gbest
@@ -61,16 +64,18 @@ public class Swarm {
         }
     }
 
+    // train using pso
     public void train(ArrayList<Example> examples) {
         int i = 0;
-        while (i < 100) {
+        while (i < 1000) {
             update(examples);
             i++;
-            System.out.println("[iteration:" + i + "]");
+            //System.out.println("[iteration:" + i + "]");
         }
         calculateFitness(examples);
     }
 
+    // calculates fitness of a particle and updates gbest, pbest
     public void calculateFitness(ArrayList<Example> examples) {
         Particle p;
         double fitness;

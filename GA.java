@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Random;
 
+// genetic algorithm implementation of a neural network training algorithm
 public class GA implements TrainingAlgorithm {
 
 	int populationSize;

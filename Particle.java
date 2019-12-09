@@ -6,6 +6,7 @@ import java.util.Random;
 import csci447.project4.Example;
 import csci447.project4.NeuralNetwork;
 
+// represents a particle for the pso algorithm
 class Particle {
 
     public static Random random = new Random();
@@ -26,7 +27,9 @@ class Particle {
         }
     }
 
+    // gets the fitness of the current position
     public double getFitness(NeuralNetwork network, ArrayList<Example> examples) {
+        // set network weights to current position and calcualte 0-1 loss or mse
         network.setWeights(position);
         if (network.isClassification()) {
             int actual;
@@ -50,6 +53,7 @@ class Particle {
             }
             return 1.0/mse;
         }        
+        // return 1/loss or mse
     }
 
 }

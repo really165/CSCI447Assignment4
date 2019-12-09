@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Random;
 import csci447.project4.NeuralNetwork;
 
+// differential evolution implementation of a neural network training algorithm
 public class DEP implements TrainingAlgorithm {
 
 	public NeuralNetwork network;
