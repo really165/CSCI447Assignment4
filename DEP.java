@@ -119,7 +119,6 @@ public class DEP implements TrainingAlgorithm {
 			populationSet.add(tempPopulation);
 			fitnessSet.add(tempFitness);
 			System.out.println("Fitness Population: " +t +" - "+ bestFitness);
-			//System.out.println("Fitness Population: " +t +" - "+ fitnessSet.get(t).get(population.size()-1));
 			t++;
 		}
 		System.out.println("Final Fitness: " + bestFitness);
