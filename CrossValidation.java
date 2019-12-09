@@ -25,8 +25,8 @@ public class CrossValidation {
         for (ArrayList<Example>[] fold : folds) {
             System.out.println("[cross-validation][fold=" + j + "]");
             j++;
-            // Train the network with the training set
-            nn.train(fold[0]);
+            // Train the network with the training set using the training algorithm
+            nn.trainWithAlgorithm(fold[0]);
             // Classify all the examples in the test set
             for (Example e : fold[1]) {
                 if (regression) {
