@@ -19,12 +19,17 @@ public class Main {
 
 		// O
 		NeuralNetwork[] network = new NeuralNetwork[3];
-		network[0] = new NeuralNetwork(DataPreprocessor.ABALONE_NUM_FEATURES, DataPreprocessor.ABALONE_NUM_CLASSES, hidden0);
-		network[1] = new NeuralNetwork(DataPreprocessor.ABALONE_NUM_FEATURES, DataPreprocessor.ABALONE_NUM_CLASSES, hidden1);
-		network[2] = new NeuralNetwork(DataPreprocessor.ABALONE_NUM_FEATURES, DataPreprocessor.ABALONE_NUM_CLASSES, hidden2);
+		network[0] = new NeuralNetwork(DataPreprocessor.ABALONE_NUM_FEATURES, DataPreprocessor.ABALONE_NUM_CLASSES, hidden0, true);
+		network[1] = new NeuralNetwork(DataPreprocessor.ABALONE_NUM_FEATURES, DataPreprocessor.ABALONE_NUM_CLASSES, hidden1, true);
+		network[2] = new NeuralNetwork(DataPreprocessor.ABALONE_NUM_FEATURES, DataPreprocessor.ABALONE_NUM_CLASSES, hidden2, true);
 
 		for (NeuralNetwork n : network) n.setActivationFunction(new SigmoidalActivationFunction());
 
+		int populationSize = 10;
+		double mr = 80;
+		double maxm = 0.1;
+		double beta = 1.5;
+		double pr = 0.5;
 		int swarmSize = 10;
 		double c1 = 2.05;
 		double c2 = 2.05;
@@ -32,6 +37,15 @@ public class Main {
 		double loss;
 
 		for (NeuralNetwork n : network) {
+			// genetic algorithm
+			n.setTrainingAlgorithm(new GA(n, populationSize, mr, maxm));
+			loss = CrossValidation.run(n, abaloneSet, false);
+			System.out.println("Loss: " + loss);
+			// differential evolution
+			n.setTrainingAlgorithm(new DEP(n, populationSize, beta, pr));
+			loss = CrossValidation.run(n, abaloneSet, false);
+			System.out.println("Loss: " + loss);
+			// particle swarm
 			n.setTrainingAlgorithm(new PSO(n, swarmSize, c1, c2, w));
 			loss = CrossValidation.run(n, abaloneSet, false);
 			System.out.println("Loss: " + loss);
