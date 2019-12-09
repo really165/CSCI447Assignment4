@@ -15,6 +15,9 @@ public final class NeuralNetwork {
     public double eta;
     public double momentum;
 
+    public TrainingAlgorithm trainingAlgorithm;
+
+
     /**
      * Creates a multi-layer neural network
      * @param numInputs The number of input features
@@ -84,6 +87,11 @@ public final class NeuralNetwork {
             iter++;
         }
         System.out.println(iter + "]");
+    }
+
+    public void trainWithAlgorithm(ArrayList<Example> examples) {
+        System.out.println("[" + trainingAlgorithm.toString() + "]");
+        setWeights(trainingAlgorithm.train(examples));
     }
 
     /**
@@ -262,6 +270,10 @@ public final class NeuralNetwork {
     public void setParameters(double eta, double momentum) {
         this.eta = eta;
         this.momentum = momentum;
+    }
+
+    public void setTrainingAlgorithm(TrainingAlgorithm algorithm) {
+        this.trainingAlgorithm = algorithm;
     }
 
     /**
