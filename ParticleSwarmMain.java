@@ -20,12 +20,14 @@ public class ParticleSwarmMain {
             DataPreprocessor.ABALONE_NUM_CLASSES,
             hiddenLayers
         );
+        network.setActivationFunction(new SigmoidalActivationFunction());
 
         int numParticles = 20;
         int c1 = 1;
         int c2 = 1;
         double w = 0.1;
         Swarm swarm = new Swarm(network, numParticles, c1, c2, w);
+        swarm.initialize();
 
         ArrayList<Example>[][] folds = CrossValidation.getFolds(examples);
 
@@ -42,7 +44,7 @@ public class ParticleSwarmMain {
             network.setWeights(swarm.gbest);
 
             // Run validation
-            int actual, predicted, i;
+            int actual, predicted;
             double loss = 0;
             for (Example e : validation) {
                 actual = (int) e.c;

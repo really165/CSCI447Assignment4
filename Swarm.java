@@ -65,6 +65,8 @@ public class Swarm {
         int i = 0;
         while (i < 1000) {
             update(examples);
+            i++;
+            System.out.println("iteration: " + i);
         }
         calculateFitness(examples);
     }
@@ -72,7 +74,7 @@ public class Swarm {
     public void calculateFitness(ArrayList<Example> examples) {
         Particle p;
         double fitness;
-        int i,j;
+        int i;
         for (i = 0; i < particle.length; i++) {
             p = particle[i];
             fitness = p.getFitness(network, examples);
