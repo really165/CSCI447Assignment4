@@ -7,9 +7,8 @@ import csci447.project4.NeuralNetwork;
 public class DEP implements TrainingAlgorithm {
 
 	public NeuralNetwork network;
-	ArrayList<Double> fitnessScores = new ArrayList<Double>();
-	ArrayList<double[]> population = new ArrayList<double[]>();
-	int weightArrayLength = 50;
+	
+	int weightArrayLength;
 	int populationSize;
 	double beta;
 	double pr;
@@ -23,6 +22,14 @@ public class DEP implements TrainingAlgorithm {
 	
 	@Override
 	public double[] train(ArrayList<Example> examples) {
+		
+		ArrayList<Double> fitnessScores = new ArrayList<Double>();
+		ArrayList<double[]> population = new ArrayList<double[]>();
+		ArrayList<ArrayList<double[]>> populationSet = new ArrayList<ArrayList<double[]>>();
+		ArrayList<ArrayList<Double>> fitnessSet = new ArrayList<ArrayList<Double>>();
+		double bestFitness=0;
+		int position=0;
+		weightArrayLength = network.getNumWeights();
  		int t=0; //generation counter
  		double trialVector;
  		
@@ -47,9 +54,10 @@ public class DEP implements TrainingAlgorithm {
  			//add fitness value to the fitness score variable
  			fitnessScores.add(fitness);
  		}
- 		
+ 		populationSet.add(population);// Initial population
+ 		fitnessSet.add(fitnessScores);
  		// Offpring
- 		double[] Xo=new double[1];
+ 		double[] Xo=new double[weightArrayLength];
  		Random rand=new Random();
  		//Random examples
  		double[] x1;
@@ -59,62 +67,67 @@ public class DEP implements TrainingAlgorithm {
 		int iterations=0;
 		while (iterations<100) {
 			iterations++;
-			for (int j=0; j<populationSize; j++) {
+			ArrayList<double[]> tempPopulation = new ArrayList<double[]>();
+			ArrayList<Double> tempFitness = new ArrayList<Double>();
+			for (int j=0; j<populationSet.get(t).size(); j++) {
 				
 				// select three non-repeated random vectors
 				ArrayList<Integer> repeated = new ArrayList<Integer>();
 				repeated.add(j);
 				int randNumber=repeatedCheck(repeated);
-				x1=population.get(randNumber);
+				x1=populationSet.get(t).get(randNumber);
 				repeated.add(randNumber);
 				randNumber=repeatedCheck(repeated);
-				x2=population.get(randNumber);
+				x2=populationSet.get(t).get(randNumber);
 				repeated.add(randNumber);
 				randNumber=repeatedCheck(repeated);
-				x3=population.get(randNumber);
+				x3=populationSet.get(t).get(randNumber);
 
 				// Trial Vector
 				trialVector=x1[0]+beta*(x2[0]-x3[0]);
 				// Offpring-Crossover
 				double fitnessOffpring;
-				double randDouble=rand.nextDouble();
-				if(randDouble<=pr) {
-					Xo=population.get(j); 
-				}
-				else {
-					Xo[0]=trialVector;
-				}
+				
+				for(int i = 0; i < weightArrayLength; i++) {
+					double randDouble=rand.nextDouble();
+					if(randDouble<=pr) {
+						Xo[i]=populationSet.get(t).get(j)[i]; 
+					}
+					else {
+						Xo[i]=trialVector;
+					}
+	 			}
+				
 				//Set fitness of the new offpring
 				fitnessOffpring = getFitness(examples, Xo);
 				
 				//Selection
-				if(j==population.size()-1) {//Last vector
-					if(fitnessOffpring>fitnessScores.get(j)) {//if fitness of offpring is better
-						population.add(Xo);
-						fitnessScores.add(fitnessOffpring);
-					}
-					else {
-						population.add(population.get(j));
-						fitnessScores.add(fitnessScores.get(j));
-					}
+				
+				if(fitnessOffpring>fitnessScores.get(j)) {//if fitness of offpring is better
+					tempPopulation.add(Xo); //First vector have the best fitness
+					tempFitness.add(fitnessOffpring);
 				}
 				else {
-					if(fitnessOffpring>fitnessScores.get(j)) {//if fitness of offpring is better
-						population.set(j+1, Xo);
-						fitnessScores.set(j+1, fitnessOffpring);
-					}
-					else {
-						population.set(j+1, population.get(j));
-						fitnessScores.set(j+1, fitnessScores.get(j));
-					}
+					tempPopulation.add(populationSet.get(t).get(j));
+					tempFitness.add(fitnessSet.get(t).get(j));
+				}
+				if(tempFitness.get(j)>bestFitness) {//Determine best fitness of the population
+					bestFitness=tempFitness.get(j);
+					position=j;
 				}
 			}
+			populationSet.add(tempPopulation);
+			fitnessSet.add(tempFitness);
+			System.out.println("Fitness Population: " +t +" - "+ bestFitness);
+			//System.out.println("Fitness Population: " +t +" - "+ fitnessSet.get(t).get(population.size()-1));
+			t++;
 		}
-		return population.get(population.size());
+		System.out.println("Final Fitness: " + bestFitness);
+		return populationSet.get(populationSet.size()-1).get(position);
 	}
 	public int repeatedCheck(ArrayList<Integer> num) {
 		Random rand=new Random();
-		int randInt=rand.nextInt(population.size());
+		int randInt=rand.nextInt(populationSize);
 		if(num.contains(randInt)) {
 			return repeatedCheck(num);
 		}
@@ -136,8 +149,14 @@ public class DEP implements TrainingAlgorithm {
                 loss++;
             }
         }
-        return 1/(loss/examples.size());
+        double lossTotal = (double)loss;
+        double examplesSize = (double)examples.size();
+        if(lossTotal/examplesSize == 0.0) {
+        	return examplesSize;
+        }
+        return 1/(lossTotal/examplesSize);
     }
+	
 
 }
 

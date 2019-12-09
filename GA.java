@@ -31,7 +31,7 @@ public class GA implements TrainingAlgorithm {
 		int numOutputs = examples.get(0).target.length;
 		System.out.println("numOutputs = " + numOutputs);
 		//declare the number of hidden nodes in each layer
-		int[] hiddenNodes = new int[]{8,6};
+		int[] hiddenNodes = new int[]{numInputs,numOutputs};
 		//declare the neural network
 		NN = new NeuralNetwork(numInputs, numOutputs, hiddenNodes);
 		NN.setActivationFunction(new SigmoidalActivationFunction());
@@ -50,8 +50,8 @@ public class GA implements TrainingAlgorithm {
 			for(int j = 0; j < weightArrayLength; j++) {
 				//generate random number within a certain range(-0.1 to 0.1)
 				Random weight = new Random();
-				double minWeight = -0.1;
-			    double maxWeight = 0.1;
+				double minWeight = -maxMutation*10;
+			    double maxWeight = maxMutation*10;
 			    double randomWeight = minWeight + (maxWeight - minWeight) * weight.nextDouble();
 				//put that number in the weight array at index
 			    newWeightArray[j] = randomWeight;
@@ -73,7 +73,7 @@ public class GA implements TrainingAlgorithm {
 		//declare variable for iteration count
 		int iterations = 0;
 		//while population has not converged(average fitness has not changed enough) or a set number of iterations
-		while(iterations < 1000) {
+		while(iterations < populationSize) {
 			//selection(find the two members with the highest fitness scores)
 			//declare parent1, parent2 variables(index of max weight array)
 			int parent1 = 0, parent2 = 0;
@@ -240,9 +240,7 @@ public class GA implements TrainingAlgorithm {
 			}
 			//new fitness average is new fitness total/length of fitness scores variable
 			double newFitnessAverage = newFitnessTotal/fitnessScores.size();
-
-			//determine if fitness has changed enough
-			//if new fitness average > old fitness average
+			
 			//update fitness average
 			//old fitness average = new fitness average
 			fitnessAverage = newFitnessAverage;
