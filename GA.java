@@ -290,6 +290,11 @@ public class GA implements TrainingAlgorithm {
         	return examplesSize;
         }
         return 1/(lossTotal/examplesSize);
-    }
+	}
+	
+	@Override
+	public String toString() {
+		return "genetic-algorithm";
+	}
 	
 }

@@ -6,4 +6,6 @@ interface TrainingAlgorithm {
 	
     double[] train(ArrayList<Example> examples);
 
+    String toString();
+
 }

@@ -155,7 +155,12 @@ public class DEP implements TrainingAlgorithm {
         	return examplesSize;
         }
         return 1/(lossTotal/examplesSize);
-    }
+	}
+	
+	@Override
+	public String toString() {
+		return "differential-evolution";
+	}
 	
 
 }
