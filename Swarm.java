@@ -63,10 +63,10 @@ public class Swarm {
 
     public void train(ArrayList<Example> examples) {
         int i = 0;
-        while (i < 1000) {
+        while (i < 100) {
             update(examples);
             i++;
-            System.out.println("iteration: " + i);
+            System.out.println("[iteration:" + i + "]");
         }
         calculateFitness(examples);
     }
