@@ -28,18 +28,30 @@ class Particle {
 
     public double getFitness(NeuralNetwork network, ArrayList<Example> examples) {
         network.setWeights(position);
-        int actual;
-        int predicted;
-        int loss = 0;
-        for (Example e : examples) {
-            network.classify(e);
-            actual = (int) e.c;
-            predicted = network.classify(e);
-            if (actual != predicted) {
-                loss++;
+        if (network.isClassification()) {
+            int actual;
+            int predicted;
+            int loss = 0;
+            for (Example e : examples) {
+                network.classify(e);
+                actual = (int) e.c;
+                predicted = network.classify(e);
+                if (actual != predicted) {
+                    loss++;
+                }
             }
-        }
-        return 1.0/((double)loss/examples.size());
+            return 1.0/((double)loss/examples.size());
+        } else {
+            double actual, predicted;
+            double mse = 0;
+            for (Example e : examples) {
+                network.classify(e);
+                actual = e.c;
+                predicted = network.regress(e);
+                mse += Math.pow(predicted-actual, 2);
+            }
+            return 1.0/mse;
+        }        
     }
 
 }
