@@ -15,6 +15,7 @@ public final class NeuralNetwork {
     public double eta;
     public double momentum;
 
+    public boolean classification;
     public TrainingAlgorithm trainingAlgorithm;
 
 
@@ -24,7 +25,7 @@ public final class NeuralNetwork {
      * @param numOutputs The number of classes to predict or 1 for regression
      * @param hiddenNodes An int array with the number of hidden nodes in each hidden layer
      */
-    public NeuralNetwork(int numInputs, int numOutputs, int[] hiddenNodes) {
+    public NeuralNetwork(int numInputs, int numOutputs, int[] hiddenNodes, boolean classification) {
         // Store the number of outputs and layers
         this.numOutputs = numOutputs;
         this.layers = hiddenNodes.length+2;
@@ -41,6 +42,11 @@ public final class NeuralNetwork {
         }
         // Create output layer
         this.layer[layers-1] = new Layer(numOutputs, p);
+        this.classification = classification;
+    }
+
+    public boolean isClassification() {
+        return classification;
     }
 
     /**

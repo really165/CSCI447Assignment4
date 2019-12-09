@@ -118,10 +118,10 @@ public class DEP implements TrainingAlgorithm {
 			}
 			populationSet.add(tempPopulation);
 			fitnessSet.add(tempFitness);
-			System.out.println("Fitness Population: " +t +" - "+ bestFitness);
+			//System.out.println("Fitness Population: " +t +" - "+ bestFitness);
 			t++;
 		}
-		System.out.println("Final Fitness: " + bestFitness);
+		//System.out.println("Final Fitness: " + bestFitness);
 		return populationSet.get(populationSet.size()-1).get(position);
 	}
 	public int repeatedCheck(ArrayList<Integer> num) {
@@ -137,23 +137,28 @@ public class DEP implements TrainingAlgorithm {
 	
 	public double getFitness(ArrayList<Example> examples, double[] weights) {
         network.setWeights(weights);
-        int actual;
-        int predicted;
-        int loss = 0;
-        for (Example e : examples) {
-            network.classify(e);
-            actual = (int) e.c;
-            predicted = network.classify(e);
-            if (actual != predicted) {
-                loss++;
+        if (network.isClassification()) {
+            int actual;
+            int predicted;
+            int loss = 0;
+            for (Example e : examples) {
+                actual = (int) e.c;
+                predicted = network.classify(e);
+                if (actual != predicted) {
+                    loss++;
+                }
             }
+            return 1.0/((double)loss/examples.size());
+        } else {
+            double actual, predicted;
+            double mse = 0;
+            for (Example e : examples) {
+                actual = e.c;
+                predicted = network.regress(e);
+                mse += Math.pow(predicted-actual, 2);
+            }
+            return 1.0/mse;
         }
-        double lossTotal = (double)loss;
-        double examplesSize = (double)examples.size();
-        if(lossTotal/examplesSize == 0.0) {
-        	return examplesSize;
-        }
-        return 1/(lossTotal/examplesSize);
 	}
 	
 	@Override

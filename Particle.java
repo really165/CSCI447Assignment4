@@ -33,7 +33,6 @@ class Particle {
             int predicted;
             int loss = 0;
             for (Example e : examples) {
-                network.classify(e);
                 actual = (int) e.c;
                 predicted = network.classify(e);
                 if (actual != predicted) {
@@ -45,7 +44,6 @@ class Particle {
             double actual, predicted;
             double mse = 0;
             for (Example e : examples) {
-                network.classify(e);
                 actual = e.c;
                 predicted = network.regress(e);
                 mse += Math.pow(predicted-actual, 2);

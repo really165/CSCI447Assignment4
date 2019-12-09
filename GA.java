@@ -15,7 +15,8 @@ public class GA implements TrainingAlgorithm {
 	double fitnessAverage;
 	NeuralNetwork NN;
 	
-	public GA(int populationSize, double mutationProbability, double maxMutation) {
+	public GA(NeuralNetwork NN, int populationSize, double mutationProbability, double maxMutation) {
+		this.NN = NN;
 		this.populationSize = populationSize;
 		this.mutationProbability = mutationProbability;
 		this.maxMutation = maxMutation;
@@ -24,18 +25,6 @@ public class GA implements TrainingAlgorithm {
 	@Override
 	public double[] train(ArrayList<Example> examples) {
 		//determine the length of the weight array
-		//get the number of inputs(number of input features)
-		int numInputs = examples.get(0).input.length;
-		System.out.println("numInputs = " + numInputs);
-		//get the number of outputs(number of classes)
-		int numOutputs = examples.get(0).target.length;
-		System.out.println("numOutputs = " + numOutputs);
-		//declare the number of hidden nodes in each layer
-		int[] hiddenNodes = new int[]{numInputs,numOutputs};
-		//declare the neural network
-		NN = new NeuralNetwork(numInputs, numOutputs, hiddenNodes);
-		NN.setActivationFunction(new SigmoidalActivationFunction());
-        NN.setParameters(0.1, 0.1);
 		weightArrayLength = NN.getNumWeights();
 		
 		//construct initial population(generate random weights)
@@ -153,7 +142,6 @@ public class GA implements TrainingAlgorithm {
 				//the second offspring
 				//determine if weight will be mutated
 				//generate random number between 0 and 100
-				Random randomPercentage2 = new Random();
 				int percentage2 =  randomPercentage1.nextInt(100+1);
 				//if number is less than mutation probability
 				if(percentage2 < mutationProbability) {
@@ -244,7 +232,7 @@ public class GA implements TrainingAlgorithm {
 			//update fitness average
 			//old fitness average = new fitness average
 			fitnessAverage = newFitnessAverage;
-			System.out.println("fitness average = " + fitnessAverage);
+			//System.out.println("fitness average = " + fitnessAverage);
 			//increment iteration count
 			iterations++;
 		}
@@ -266,30 +254,35 @@ public class GA implements TrainingAlgorithm {
 			}
 		}
 		//return the array of the most fit member of the population
-		System.out.println("final weight array = " + Arrays.toString(members.get(maxFitnessIndex)));
-		System.out.println("final fitness score = " + fitnessScores.get(maxFitnessIndex));
+		//System.out.println("final weight array = " + Arrays.toString(members.get(maxFitnessIndex)));
+		//System.out.println("final fitness score = " + fitnessScores.get(maxFitnessIndex));
 		return members.get(maxFitnessIndex);
 	}
 	
 	public double getFitness(ArrayList<Example> examples, double[] weights) {
 		NN.setWeights(weights);
-		int actual;
-        int predicted;
-        int loss = 0;
-        for (Example e : examples) {
-            NN.classify(e);
-            actual = (int) e.c;
-            predicted = NN.classify(e);
-            if (actual != predicted) {
-                loss++;
+		if (NN.isClassification()) {
+			int actual;
+            int predicted;
+            int loss = 0;
+            for (Example e : examples) {
+                actual = (int) e.c;
+                predicted = NN.classify(e);
+                if (actual != predicted) {
+                    loss++;
+                }
             }
-        }
-        double lossTotal = (double)loss;
-        double examplesSize = (double)examples.size();
-        if(lossTotal/examplesSize == 0.0) {
-        	return examplesSize;
-        }
-        return 1/(lossTotal/examplesSize);
+            return 1.0/((double)loss/examples.size());
+		} else {
+			double actual, predicted;
+            double mse = 0;
+            for (Example e : examples) {
+                actual = e.c;
+                predicted = NN.regress(e);
+                mse += Math.pow(predicted-actual, 2);
+            }
+            return 1.0/mse;
+		}
 	}
 	
 	@Override
